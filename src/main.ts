@@ -164,13 +164,11 @@ core.info(`Running in ${baseDir}`)
 
     } else core.info('> Not pushing anything.')
 
+    core.endGroup()
+    core.info('> Task completed.')
+  } else {
     if (getInput('tag')) {
       core.info('> Tagging commit...')
-
-      if (!fetchOption)
-        core.warning(
-          'Creating a tag without fetching the repo first could result in an error when pushing to GitHub. Refer to the action README for more info about this topic.'
-        )
 
       await git
         .tag(matchGitArgs(getInput('tag') || ''), (err, data?) => {
@@ -192,10 +190,6 @@ core.info(`Running in ${baseDir}`)
           })
           .catch((err) => core.setFailed(err))
     } else core.info('> No tag info provided.')
-
-    core.endGroup()
-    core.info('> Task completed.')
-  } else {
     core.endGroup()
     core.info('> Working tree clean. Nothing to commit.')
   }
