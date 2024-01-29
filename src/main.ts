@@ -124,26 +124,6 @@ core.info(`Running in ${baseDir}`)
       })
       .catch((err) => core.setFailed(err))
 
-    if (getInput('tag')) {
-      core.info('> Tagging commit...')
-
-      if (!fetchOption)
-        core.warning(
-          'Creating a tag without fetching the repo first could result in an error when pushing to GitHub. Refer to the action README for more info about this topic.'
-        )
-
-      await git
-        .tag(matchGitArgs(getInput('tag') || ''), (err, data?) => {
-          if (data) setOutput('tagged', 'true')
-          return log(err, data)
-        })
-        .then((data) => {
-          setOutput('tagged', 'true')
-          return log(null, data)
-        })
-        .catch((err) => core.setFailed(err))
-    } else core.info('> No tag info provided.')
-
     let pushOption: string | boolean
     try {
       pushOption = getInput('push', true)
@@ -182,9 +162,28 @@ core.info(`Running in ${baseDir}`)
         )
       }
 
-      if (getInput('tag')) {
-        core.info('> Pushing tags to repo...')
+    } else core.info('> Not pushing anything.')
 
+    if (getInput('tag')) {
+      core.info('> Tagging commit...')
+
+      if (!fetchOption)
+        core.warning(
+          'Creating a tag without fetching the repo first could result in an error when pushing to GitHub. Refer to the action README for more info about this topic.'
+        )
+
+      await git
+        .tag(matchGitArgs(getInput('tag') || ''), (err, data?) => {
+          if (data) setOutput('tagged', 'true')
+          return log(err, data)
+        })
+        .then((data) => {
+          setOutput('tagged', 'true')
+          return log(null, data)
+        })
+        .catch((err) => core.setFailed(err))
+
+        core.info('> Pushing tags to repo...')
         await git
           .pushTags('origin', matchGitArgs(getInput('tag_push') || ''))
           .then((data) => {
@@ -192,8 +191,7 @@ core.info(`Running in ${baseDir}`)
             return log(null, data)
           })
           .catch((err) => core.setFailed(err))
-      } else core.info('> No tags to push.')
-    } else core.info('> Not pushing anything.')
+    } else core.info('> No tag info provided.')
 
     core.endGroup()
     core.info('> Task completed.')

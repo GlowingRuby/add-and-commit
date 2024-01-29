@@ -84,10 +84,10 @@ export async function checkInputs() {
   }
 
   // #region add, remove
-  if (!getInput('add') && !getInput('remove'))
-    throw new Error(
-      "Both 'add' and 'remove' are empty, the action has nothing to do."
-    )
+  // if (!getInput('add') && !getInput('remove'))
+  //   throw new Error(
+  //     "Both 'add' and 'remove' are empty, the action has nothing to do."
+  //   )
 
   if (getInput('add')) {
     const parsed = parseInputArray(getInput('add'))
